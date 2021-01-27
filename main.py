@@ -46,8 +46,7 @@ dsList = list(filter(lambda name: "phoenix.datasource" in name or "postgres.data
 excelList = list(filter(lambda name: ".xls" in name, conflictingFiles))
 
 onlyVersionIsChanged = '1 file changed, 4 insertions(+)'
-print('Pom merge')
-for pom in tqdm(pomList):
+for pom in tqdm(pomList, desc="Merging Pom"):
     diffFromOrigin = git.diff(original_branch, pom, short_stat=True)
     diffFromBranchToMerge = git.diff(branch_to_merge, pom, short_stat=True)
     if diffFromOrigin == onlyVersionIsChanged:
@@ -55,9 +54,11 @@ for pom in tqdm(pomList):
     elif diffFromBranchToMerge == onlyVersionIsChanged:
         git.accept_from_other_branch(branch_to_merge, pom)
         change_version(pom, versionToReplace, currVersion)
+print("Pom merge ended")
 
 for ds in dsList:
     git.accept_from_current_branch(ds)
 
 for excel in excelList:
     git.accept_from_other_branch(branch_to_merge, excel)
+
