@@ -42,7 +42,9 @@ git.merge(branch_to_merge, dry_run=False)
 
 conflictingFiles = git.find_conflicting_file(branch_to_merge)
 pomList = list(filter(lambda name: "pom.xml" in name, conflictingFiles))
-dsList = list(filter(lambda name: "phoenix.datasource" in name or "postgres.datasource" in name, conflictingFiles))
+dsAndHostList = list(
+    filter(lambda name: "phoenix.datasource" in name or "postgres.datasource" in name or "FS.HOST" in name,
+           conflictingFiles))
 excelList = list(filter(lambda name: ".xls" in name, conflictingFiles))
 
 onlyVersionIsChanged = '1 file changed, 4 insertions(+)'
@@ -54,11 +56,12 @@ for pom in tqdm(pomList, desc="Merging Pom"):
     elif diffFromBranchToMerge == onlyVersionIsChanged:
         git.accept_from_other_branch(branch_to_merge, pom)
         change_version(pom, versionToReplace, currVersion)
+        git.add(pom)
 print("Pom merge ended")
 
-for ds in dsList:
-    git.accept_from_current_branch(ds)
+for file in dsAndHostList:
+    git.accept_from_current_branch(file)
 
 for excel in excelList:
     git.accept_from_other_branch(branch_to_merge, excel)
-
+    git.add(excel)

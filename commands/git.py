@@ -56,6 +56,10 @@ def accept_from_other_branch(branch_to_merge, filename):
     __run(f"git checkout {branch_to_merge} --", filename)
 
 
+def add(filename):
+    __run(f"git add ", filename)
+
+
 def diff(branch_to_compare, filename, short_stat=False, ignore_whitespaces=True):
     result = None
     if short_stat and ignore_whitespaces:
